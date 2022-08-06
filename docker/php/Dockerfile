@@ -43,10 +43,11 @@ FROM base_php as build_xdebug
 RUN apt-get update \
     && apt-get -y install build-essential autoconf \
     && apt-get clean \
-    && pecl install xdebug
+    && pecl install xdebug pcov
 
 FROM composer_install as with_xdebug
 COPY --from=build_xdebug /opt/bitnami/php/lib/php/extensions/xdebug.so /opt/bitnami/php/lib/php/extensions/xdebug.so
+COPY --from=build_xdebug /opt/bitnami/php/lib/php/extensions/pcov.so /opt/bitnami/php/lib/php/extensions/pcov.so
 COPY docker/php/conf.d/xdebug.ini /opt/bitnami/php/etc/conf.d/99-xdebug.ini
 COPY docker/php/entrypoint.d/01-xdebug-setup.sh /entrypoint.d/01-xdebug-setup.sh
 RUN chmod +x /entrypoint.d/01-xdebug-setup.sh
